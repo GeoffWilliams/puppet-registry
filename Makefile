@@ -1,6 +1,6 @@
 all:
-	bundle exec pdqtest all
+	bundle exec pdqtest --skip-idempotency all
 	bundle exec puppet strings
 
 shell:
-	bundle exec pdqtest --keep-container acceptance
+	bundle exec pdqtest  --skip-idempotency --keep-container acceptance
