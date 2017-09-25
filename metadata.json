@@ -1,7 +1,7 @@
 {
-  "name": "geofwilliams-registry",
+  "name": "geoffwilliams-registry",
   "version": "0.1.0",
-  "author": "geofwilliams",
+  "author": "geoffwilliams",
   "summary": "Mock version of puppetlabs-registry to allow rspec testing",
   "license": "Apache-2.0",
   "source": "https://github.com/GeoffWilliams/puppet-registry.git",
