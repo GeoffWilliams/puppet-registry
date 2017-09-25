@@ -1,7 +1,5 @@
 Puppet::Type.type(:registry_key).provide(:registry) do
 
-  defaultfor :operatingsystem => :windows
-  confine    :operatingsystem => :windows
 
   def self.instances
     []

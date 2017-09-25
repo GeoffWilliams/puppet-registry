@@ -1,8 +1,7 @@
 require 'puppet/type'
 
 Puppet::Type.type(:registry_value).provide(:registry) do
-  defaultfor :operatingsystem => :windows
-  confine    :operatingsystem => :windows
+
 
   def self.instances
     []
@@ -47,7 +46,7 @@ Puppet::Type.type(:registry_value).provide(:registry) do
   def regvalue
     @regvalue
   end
-  
+
   def path
     @path ||= PuppetX::Puppetlabs::Registry::RegistryValuePath.new(resource.parameter(:path).value)
   end

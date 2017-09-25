@@ -1,10 +1,4 @@
 require 'puppet/type'
-begin
-  require "puppet_x/puppetlabs/registry"
-rescue LoadError => detail
-  require 'pathname' # JJM WORK_AROUND #14073 and #7788
-  require Pathname.new(__FILE__).dirname + "../../" + "puppet_x/puppetlabs/registry"
-end
 
 Puppet::Type.newtype(:registry_key) do
   @doc = <<-EOT
@@ -36,21 +30,10 @@ EOT
       prefix.  For example: '32:HKLM\Software'"
 
     validate do |path|
-      PuppetX::Puppetlabs::Registry::RegistryKeyPath.new(path).valid?
+      true
     end
     munge do |path|
-      reg_path = PuppetX::Puppetlabs::Registry::RegistryKeyPath.new(path)
-      # Windows is case insensitive and case preserving.  We deal with this by
-      # aliasing resources to their downcase values.  This is inspired by the
-      # munge block in the alias metaparameter.
-      if @resource.catalog
-        reg_path.aliases.each do |alt_name|
-          @resource.catalog.alias(@resource, alt_name)
-        end
-      else
-        Puppet.debug "Resource has no associated catalog.  Aliases are not being set for #{@resource.to_s}"
-      end
-      reg_path.canonical
+      path
     end
   end
 
@@ -87,13 +70,7 @@ EOT
   # Autorequire the nearest ancestor registry_key found in the catalog.
   autorequire(:registry_key) do
     req = []
-    path = PuppetX::Puppetlabs::Registry::RegistryKeyPath.new(value(:path))
-    # It is important to match against the downcase value of the path because
-    # other resources are expected to alias themselves to the downcase value so
-    # that we respect the case insensitive and preserving nature of Windows.
-    if found = path.enum_for(:ascend).find { |p| catalog.resource(:registry_key, p.to_s.downcase) }
-      req << found.to_s.downcase
-    end
+
     req
   end
 
@@ -103,7 +80,7 @@ EOT
 
     # get the "should" names of registry values associated with this key
     should_values = catalog.relationship_graph.direct_dependents_of(self).select {|dep| dep.type == :registry_value }.map do |reg|
-      PuppetX::Puppetlabs::Registry::RegistryValuePath.new(reg.parameter(:path).value).valuename
+      path
     end
 
     # get the "is" names of registry values associated with this key
